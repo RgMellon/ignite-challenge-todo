@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Alert } from "react-native";
 
-import { Header } from '../components/Header';
-import { MyTasksList } from '../components/MyTasksList';
-import { TodoInput } from '../components/TodoInput';
+import { Header } from "../components/Header";
+import { MyTasksList } from "../components/MyTasksList";
+import { TodoInput } from "../components/TodoInput";
 
 interface Task {
   id: number;
@@ -11,18 +12,38 @@ interface Task {
 }
 
 export function Home() {
-  // const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   function handleAddTask(newTaskTitle: string) {
-    //TODO - add new task if it's not empty
+    if (!newTaskTitle) return;
+
+    const formattedTask = {
+      id: new Date().getTime(),
+      title: newTaskTitle,
+      done: false,
+    } as Task;
+
+    setTasks((oldTaks) => [...oldTaks, formattedTask]);
   }
 
   function handleMarkTaskAsDone(id: number) {
-    //TODO - mark task as done if exists
+    const formmatedTasks = tasks.map((task: Task) => {
+      if (task.id === id) {
+        return {
+          ...task,
+          done: !task.done,
+        };
+      } else {
+        return task;
+      }
+    });
+
+    setTasks(formmatedTasks);
   }
 
   function handleRemoveTask(id: number) {
-    //TODO - remove task from state
+    const filtredTaks = tasks.filter((task: Task) => task.id !== id);
+    setTasks(filtredTaks);
   }
 
   return (
@@ -31,11 +52,11 @@ export function Home() {
 
       <TodoInput addTask={handleAddTask} />
 
-      <MyTasksList 
-        tasks={tasks} 
-        onPress={handleMarkTaskAsDone} 
-        onLongPress={handleRemoveTask} 
+      <MyTasksList
+        tasks={tasks}
+        onPress={handleMarkTaskAsDone}
+        onLongPress={handleRemoveTask}
       />
     </>
-  )
+  );
 }
